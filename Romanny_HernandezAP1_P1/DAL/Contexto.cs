@@ -1,14 +1,13 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Romanny_HernandezAP1_P1.Models;
 
-namespace Romanny_HernandezAP1_P1.DAL
-{
+namespace Romanny_HernandezAP1_P1.DAL;
+
     public class Contexto : DbContext
     {
         public Contexto(DbContextOptions<Contexto> options)
         : base(options) { }
-        public DbSet<Model> Models { get; set; }
+        public DbSet<ViajesEspaciales> ViajesEspaciales { get; set; }
     }
 
-}
 
