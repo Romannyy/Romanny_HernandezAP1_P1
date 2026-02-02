@@ -1,10 +1,19 @@
+using Microsoft.EntityFrameworkCore;
 using Romanny_HernandezAP1_P1.Components;
+using Romanny_HernandezAP1_P1.DAL;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
+
+// Obtengo el ConStr para usarlo en el contexto
+var ConStr = builder.Configuration.GetConnectionString("SqlConStr");
+
+// Agrego el contexto al builder con el ConStr
+builder.Services.AddDbContextFactory<Contexto>(o => o.UseSqlServer(ConStr));
+
 
 var app = builder.Build();
 
@@ -15,6 +24,8 @@ if (!app.Environment.IsDevelopment())
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
+
+
 app.UseStatusCodePagesWithReExecute("/not-found", createScopeForStatusCodePages: true);
 app.UseHttpsRedirection();
 
