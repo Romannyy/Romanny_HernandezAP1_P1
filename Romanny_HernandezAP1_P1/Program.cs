@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Romanny_HernandezAP1_P1.Components;
 using Romanny_HernandezAP1_P1.DAL;
+using Romanny_HernandezAP1_P1.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,6 +14,8 @@ var ConStr = builder.Configuration.GetConnectionString("SqlConStr");
 
 // Agrego el contexto al builder con el ConStr
 builder.Services.AddDbContextFactory<Contexto>(o => o.UseSqlServer(ConStr));
+
+builder.Services.AddScoped<ViajesEspacialesServices>();
 
 
 var app = builder.Build();

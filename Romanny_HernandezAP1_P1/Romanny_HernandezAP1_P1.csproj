@@ -15,4 +15,8 @@
     </PackageReference>
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Components\Pages\ViajesEspaciales\" />
+  </ItemGroup>
+
 </Project>

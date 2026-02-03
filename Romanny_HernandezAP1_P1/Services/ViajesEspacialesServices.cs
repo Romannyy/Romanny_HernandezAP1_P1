@@ -7,7 +7,8 @@ namespace Romanny_HernandezAP1_P1.Services;
 
 public class ViajesEspacialesServices(IDbContextFactory<Contexto> DbFactory)
 {
-    // MÉTODO INSERTAR
+    /* MÉTODO INSERTAR
+     
     private async Task<bool> Insertar()
     {
 
@@ -46,7 +47,7 @@ public class ViajesEspacialesServices(IDbContextFactory<Contexto> DbFactory)
     // MÉTODO GUARDAR
     public async Task<bool> Guardar()
     {
-
+        
     }
 
     // MÉTEODO LISTAR
@@ -58,4 +59,6 @@ public class ViajesEspacialesServices(IDbContextFactory<Contexto> DbFactory)
             .AsNoTracking()
             .ToListAsync();
     }
+
+    */
 }
