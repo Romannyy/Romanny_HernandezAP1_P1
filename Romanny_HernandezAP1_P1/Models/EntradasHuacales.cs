@@ -2,10 +2,10 @@
 
 namespace Romanny_HernandezAP1_P1.Models;
 
-public class ViajesEspaciales
+public class EntradasHuacales
 {
     [Key]
-    public int ViajeId { get; set; }
+    public int HuacalId { get; set; }
     [Required (ErrorMessage = "Campo requerido.")]
     public DateTime Fecha { get; set; }
     [Required(ErrorMessage = "Campo requerido.")]

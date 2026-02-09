@@ -7,7 +7,7 @@ namespace Romanny_HernandezAP1_P1.DAL;
     {
         public Contexto(DbContextOptions<Contexto> options)
         : base(options) { }
-        public DbSet<ViajesEspaciales> ViajesEspaciales { get; set; }
+        public DbSet<EntradasHuacales> EntradasHuacales { get; set; }
 
     }
 

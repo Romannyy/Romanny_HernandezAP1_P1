@@ -5,7 +5,7 @@ using System.Linq.Expressions;
 
 namespace Romanny_HernandezAP1_P1.Services;
 
-public class ViajesEspacialesServices(IDbContextFactory<Contexto> DbFactory)
+public class HuacalesService(IDbContextFactory<Contexto> DbFactory)
 {
     /* MÉTODO INSERTAR
      
@@ -51,10 +51,10 @@ public class ViajesEspacialesServices(IDbContextFactory<Contexto> DbFactory)
     }
 
     // MÉTEODO LISTAR
-    public async Task<List<ViajesEspaciales>> Listar(Expression<Func<ViajesEspaciales, bool>> criterio)
+    public async Task<List<Huacales>> Listar(Expression<Func<Huacales, bool>> criterio)
     {
         await using var contexto = await DbFactory.CreateDbContextAsync();
-        return await contexto.ViajesEspaciales
+        return await contexto.Huacales
             .Where(criterio)
             .AsNoTracking()
             .ToListAsync();
