@@ -1,0 +1,127 @@
+﻿@page "/EntradasHuacales/Edit/{idEntrada:int}"
+@inject EntradasHuacalesService entradasHuacalesService
+@inject NavigationManager navigationManager
+@rendermode InteractiveServer
+
+<PageTitle>Editar Entrada Huacales</PageTitle>
+<EditForm Model="entrada" OnValidSubmit="Modificar">
+    <DataAnnotationsValidator></DataAnnotationsValidator>
+
+    @if (entrada == null || idEntrada < 1)
+    {
+        <p>Cargando...</p>
+    }
+    else
+    {
+        <div class="container-fluid">
+            <div class="card shadow-lg">
+                <div class="card-header d-flex">
+                    <h3>Editar Entrada Huacal</h3>
+                </div>
+
+                <div class="card-body">
+                    <div class="mb-3">
+                        <strong>IdEntrada</strong>
+                        <InputNumber readonly class="form-control" @bind-Value="entrada.IdEntrada"></InputNumber>
+                        <ValidationMessage For="@(() => (entrada.IdEntrada))"></ValidationMessage>
+                    </div>
+
+                    <div class="mb-3">
+                        <strong>Fecha</strong>
+                        <InputDate class="form-control" @bind-Value="entrada.Fecha"></InputDate>
+                        <ValidationMessage For="@(() => (entrada.Fecha))"></ValidationMessage>
+                    </div>
+
+                    <div class="mb-3">
+                        <strong>Nombre Cliente</strong>
+                        <InputText class="form-control" @bind-Value="entrada.NombreCliente"></InputText>
+                        <ValidationMessage For="@(() => (entrada.NombreCliente))"></ValidationMessage>
+                    </div>
+
+                    <div class="mb-3">
+                        <strong>Costo</strong>
+                        <InputNumber class="form-control" @bind-Value="entrada.Costo"></InputNumber>
+                        <ValidationMessage For="@(() => (entrada.Costo))"></ValidationMessage>
+                    </div>
+
+                    @if (!string.IsNullOrEmpty(Mensaje))
+                    {
+                        <div class="alert alert-danger">
+                            <p>@Mensaje</p>
+                        </div>
+                      
+                    }
+
+                </div>
+
+                <div class="card-footer">
+                    <a class="btn btn-secondary" type="button" href="/EntradasHuacales/Index"> <i class="bi bi-arrow-left"></i> Volver</a>
+                    <button class="btn btn-primary" type="submit"> <i class="bi bi-floppy"></i> Guardar</button>
+                    <button class="btn btn-danger" type="button" @onclick="ConfirmarEliminacion"> <i class="bi bi-x"></i> Eliminar</button>
+
+                    @if (MostrarConfirmacion)
+                    {
+                        <div class="alert alert-danger">
+                            <p>¿Seguro que desea eliminar esta entrada huacal?</p>
+                            <button class="btn btn-danger" type="button" @onclick="Eliminar"> Si, eliminar</button>
+                            <button class="btn btn-secondary" type="button" @onclick="CancelarEliminacion"> Cancelar</button>
+                        </div>
+                    }
+
+                </div>
+            </div>
+
+        </div>
+    }
+   
+</EditForm>
+@code {
+    [Parameter]
+    public int idEntrada { get; set; }
+
+    public EntradasHuacales entrada { get; set; } = new EntradasHuacales();
+    public string Mensaje { get; set; } = string.Empty;
+    public bool MostrarConfirmacion { get; set; } = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var encontrado = await entradasHuacalesService.Buscar(idEntrada);
+        if (encontrado != null)
+            entrada = encontrado;
+    }
+
+    public async Task Modificar()
+    {
+        try
+        {
+            var exito = await entradasHuacalesService.Guardar(entrada);
+            if (exito)
+            {
+                navigationManager.NavigateTo("/EntradasHuacales/Index");
+            }
+        }
+        catch (Exception ex)
+        {
+            Mensaje = ex.Message;
+        }
+    }
+
+    public async Task Eliminar()
+    {
+        var exito = await entradasHuacalesService.Eliminar(entrada.IdEntrada);
+        if (exito)
+        {
+            navigationManager.NavigateTo("/EntradasHuacales/Index");
+        }
+    }
+
+    public async Task ConfirmarEliminacion()
+    {
+        MostrarConfirmacion = true;
+    }
+
+    public async Task CancelarEliminacion()
+    {
+        MostrarConfirmacion = false;
+    }
+}

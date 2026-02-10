@@ -5,12 +5,12 @@ namespace Romanny_HernandezAP1_P1.Models;
 public class EntradasHuacales
 {
     [Key]
-    public int HuacalId { get; set; }
-    [Required (ErrorMessage = "Campo requerido.")]
+    public int IdEntrada { get; set; }
+    [Required (ErrorMessage = "Campo ID requerido.")]
     public DateTime Fecha { get; set; }
-    [Required(ErrorMessage = "Campo requerido.")]
-    public string Descripción { get; set; } = string.Empty;
-    [Required(ErrorMessage = "Campo requerido.")]
+    [Required(ErrorMessage = "Campo fecha requerido.")]
+    public string NombreCliente { get; set; } = string.Empty;
+    [Required(ErrorMessage = "Campo nombre cliente requerido.")]
     public double Costo { get; set; }
 
 }

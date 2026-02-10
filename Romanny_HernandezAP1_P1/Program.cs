@@ -15,7 +15,9 @@ var ConStr = builder.Configuration.GetConnectionString("SqlConStr");
 // Agrego el contexto al builder con el ConStr
 builder.Services.AddDbContextFactory<Contexto>(o => o.UseSqlServer(ConStr));
 
-builder.Services.AddScoped<HuacalesService>();
+builder.Services.AddScoped<EntradasHuacalesService>();
+builder.Services.AddBlazorBootstrap();
+
 
 
 var app = builder.Build();

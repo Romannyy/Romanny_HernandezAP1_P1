@@ -1,0 +1,107 @@
+﻿@page "/EntradasHuacales/Index"
+@inject EntradasHuacalesService entradasHuacalesService
+@rendermode InteractiveServer
+
+<PageTitle>Entradas Huacales</PageTitle>
+
+<div class="container-fluid">
+    <div class="card shadow-lg">
+        <div class="card-header d-flex justify-content-between align-content-center">
+            <h3>Registro Entradas Huacales</h3>
+            <a class="btn btn-primary" href="/EntradasHuacales/Create"><i class="bi bi-plus-square"></i> Crear</a>
+        </div>
+
+        <div class="card-body">
+            <div class="row mb-3">
+                <div class="col-md-3">
+                    <InputSelect class="form-select" @bind-Value="Filtros">
+                        <option disabled value="">Elije un filtro</option>
+                        <option  value="Id">ID</option>
+                        <option  value="Nombre">Nombre</option>
+                    </InputSelect>
+                </div>
+
+                <div class="col-md-5">
+                    <div class="input-group">
+                        <InputText class="form-control" @bind-Value="ValorFiltro" placeholder="Buscar...">
+                        </InputText>
+                        <button class="btn btn-primary" @onclick="Buscar"> <i class="bi bi-search"></i> Buscar</button>
+                    </div>
+
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead class="table-light">
+                            <tr>
+                                <th>EntradasID</th>
+                                <th>Fecha</th>
+                                <th>Nombre Cliente</th>
+                                <th>Costo</th>
+                                <th>Acciones</th>
+                            </tr>
+                            
+                        </thead>
+                        <tbody>
+                            @foreach(var c in Lista)
+                            {
+                                <tr>
+                                    <td>@c.IdEntrada</td>
+                                    <td>@c.Fecha</td>
+                                    <td>@c.NombreCliente</td>
+                                    <td>@c.Costo</td>
+                                    <td><a href="/EntradasHuacales/Edit/@c.IdEntrada" class="btn btn-outline-primary"><i class="bi bi-pencil-square"></i></a></td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="card-footer text-end">
+                    <strong>Conteo: </strong>@Lista.Count()
+                    <strong>Total: </strong>@CostoTotal()
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@code {
+    public List<EntradasHuacales> Lista { get; set; } = new();
+    public string Filtros { get; set; } = string.Empty;
+    public string ValorFiltro { get; set; } = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await Buscar();
+    }
+
+    public async Task Buscar()
+    {
+        if (!string.IsNullOrEmpty(ValorFiltro))
+        {
+            if (Filtros == "Id" && int.TryParse(ValorFiltro, out int id))
+            {
+                Lista = await entradasHuacalesService.Listar(a => (a.IdEntrada == id));
+            }
+            else if (Filtros == "Nombre")
+            {
+                Lista = await entradasHuacalesService.Listar(a => (a.NombreCliente.ToLower().Contains(ValorFiltro.ToLower())));
+            }
+        }
+        else
+        {
+            Lista = await entradasHuacalesService.Listar(a => (a.IdEntrada > 0));
+        }
+    }
+
+    public  double CostoTotal()
+    {
+        double Costo = 0;
+        foreach (var c in Lista)
+        {
+            Costo += c.Costo;
+        }
+        return Costo;
+
+    }
+}
