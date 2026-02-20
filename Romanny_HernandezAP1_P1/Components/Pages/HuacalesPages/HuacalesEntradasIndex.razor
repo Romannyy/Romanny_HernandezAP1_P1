@@ -12,12 +12,24 @@
         </div>
 
         <div class="card-body">
-            <div class="row mb-3">
+            <div class="mb-2">
+                <div class="row">
+                    <div class="col-md-5">
+                        <div class="input-group">
+                            <p class="me-1">Desde: </p>
+                            <InputDate class="form-control me-3" @bind-Value="Desde"></InputDate>
+                            <p class="me-1">Hasta: </p>
+                            <InputDate class="form-control" @bind-Value="Hasta"></InputDate>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row mb-4">
                 <div class="col-md-3">
                     <InputSelect class="form-select" @bind-Value="Filtros">
-                        <option disabled value="">Elije un filtro</option>
-                        <option  value="Id">ID</option>
-                        <option  value="Nombre">Nombre</option>
+                        <option disabled value="">Elige un filtro</option>
+                        <option value="Id">ID</option>
+                        <option value="Nombre">Nombre</option>
                     </InputSelect>
                 </div>
 
@@ -27,48 +39,34 @@
                         </InputText>
                         <button class="btn btn-primary" @onclick="Buscar"> <i class="bi bi-search"></i> Buscar</button>
                     </div>
-
-                </div>
-
-                <div class="table-responsive">
-                    <table class="table">
-                        <thead class="table-light">
-                            <tr>
-                                <th>EntradasID</th>
-                                <th>Fecha</th>
-                                <th>Nombre Cliente</th>
-                                <th>Costo</th>
-                                <th>Acciones</th>
-                            </tr>
-                            
-                        </thead>
-                        <tbody>
-                            @foreach(var c in Lista)
-                            {
-                                <tr>
-                                    <td>@c.IdEntrada</td>
-                                    <td>@c.Fecha</td>
-                                    <td>@c.NombreCliente</td>
-                                    <td>@c.Costo</td>
-                                    <td><a href="/EntradasHuacales/Edit/@c.IdEntrada" class="btn btn-outline-primary"><i class="bi bi-pencil-square"></i></a></td>
-                                </tr>
-                            }
-                        </tbody>
-                    </table>
-                </div>
-
-                <div class="card-footer text-end">
-                    <strong>Conteo: </strong>@Lista.Count()
-                    <strong>Total: </strong>@CostoTotal()
                 </div>
             </div>
+                <div class="table-responsive">
+                    <QuickGrid Items="Lista">
+                        <PropertyColumn Property="@(e => e.IdEntrada)" Sortable="true" />
+                        <PropertyColumn Property="@(e => e.Fecha)" Format="yyyy-MM-dd" Sortable="true" />
+                        <PropertyColumn Property="@(e => e.NombreCliente)" Sortable="true" />
+                        <PropertyColumn Property="@(e => e.Precio)" Format="N2" Sortable="true" />
+                        <PropertyColumn Property="@(e => e.Cantidad)" Sortable="true" />
+                        <TemplateColumn Title="Acciones">
+                            <a class="btn btn-outline-primary" href="/EntradasHuacales/Edit/@context.IdEntrada"> <i class="bi bi-pencil-square"></i></a>
+                        </TemplateColumn>
+                    </QuickGrid>
+                </div>
+        </div>
+
+        <div class="card-footer text-end">
+            <strong>Conteo: </strong>@Lista.Count()
+            <strong>Total: </strong>@CostoTotal().ToString("N2")
         </div>
     </div>
 </div>
 @code {
-    public List<EntradasHuacales> Lista { get; set; } = new();
+    public IQueryable<EntradasHuacales> Lista { get; set; } = Enumerable.Empty<EntradasHuacales>().AsQueryable();
     public string Filtros { get; set; } = string.Empty;
     public string ValorFiltro { get; set; } = string.Empty;
+    public DateTime? Desde { get; set; } = null;
+    public DateTime? Hasta { get; set; } = null;
 
     protected override async Task OnInitializedAsync()
     {
@@ -77,29 +75,53 @@
 
     public async Task Buscar()
     {
+        List<EntradasHuacales> resultado;
+
         if (!string.IsNullOrEmpty(ValorFiltro))
         {
             if (Filtros == "Id" && int.TryParse(ValorFiltro, out int id))
             {
-                Lista = await entradasHuacalesService.Listar(a => (a.IdEntrada == id));
+                resultado = await entradasHuacalesService
+                    .Listar(a => a.IdEntrada == id);
             }
             else if (Filtros == "Nombre")
             {
-                Lista = await entradasHuacalesService.Listar(a => (a.NombreCliente.ToLower().Contains(ValorFiltro.ToLower())));
+                resultado = await entradasHuacalesService
+                    .Listar(a => a.NombreCliente
+                    .ToLower()
+                    .Contains(ValorFiltro.ToLower()));
+            }
+            else
+            {
+                resultado = await entradasHuacalesService
+                    .Listar(a => a.IdEntrada > 0);
             }
         }
         else
         {
-            Lista = await entradasHuacalesService.Listar(a => (a.IdEntrada > 0));
+            resultado = await entradasHuacalesService
+                .Listar(a => a.IdEntrada > 0);
         }
+
+        if (Desde.HasValue)
+            resultado = resultado
+                .Where(a => a.Fecha >= Desde.Value)
+                .ToList();
+
+        if (Hasta.HasValue)
+            resultado = resultado
+                .Where(a => a.Fecha <= Hasta.Value)
+                .ToList();
+
+        Lista = resultado.AsQueryable();
     }
 
-    public  double CostoTotal()
+    public double CostoTotal()
     {
         double Costo = 0;
         foreach (var c in Lista)
         {
-            Costo += c.Costo;
+            Costo += c.Precio * c.Cantidad;
         }
         return Costo;
 
