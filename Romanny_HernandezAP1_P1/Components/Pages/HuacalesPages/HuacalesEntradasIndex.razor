@@ -41,23 +41,26 @@
                     </div>
                 </div>
             </div>
-                <div class="table-responsive">
-                    <QuickGrid Items="Lista">
-                        <PropertyColumn Property="@(e => e.IdEntrada)" Sortable="true" />
-                        <PropertyColumn Property="@(e => e.Fecha)" Format="yyyy-MM-dd" Sortable="true" />
-                        <PropertyColumn Property="@(e => e.NombreCliente)" Sortable="true" />
-                        <PropertyColumn Property="@(e => e.Precio)" Format="N2" Sortable="true" />
-                        <PropertyColumn Property="@(e => e.Cantidad)" Sortable="true" />
-                        <TemplateColumn Title="Acciones">
-                            <a class="btn btn-outline-primary" href="/EntradasHuacales/Edit/@context.IdEntrada"> <i class="bi bi-pencil-square"></i></a>
-                        </TemplateColumn>
-                    </QuickGrid>
-                </div>
+
+            <div class="table-responsive">
+                <QuickGrid Items="Lista" Class="table table-striped table-bordered table-hover">
+                    <PropertyColumn Property="@(e => e.IdEntrada)" Sortable="true" />
+                    <PropertyColumn Property="@(e => e.Fecha)" Format="yyyy-MM-dd" Sortable="true" />
+                    <PropertyColumn Property="@(e => e.NombreCliente)" Sortable="true" />
+                    <PropertyColumn Property="@(e => e.Precio)" Format="N2" Sortable="true" />
+                    <PropertyColumn Property="@(e => e.Cantidad)" Sortable="true" />
+                    <TemplateColumn Title="Acciones">
+                        <a class="btn btn-outline-primary" href="/EntradasHuacales/Edit/@context.IdEntrada">
+                            <i class="bi bi-pencil-square"></i>
+                        </a>
+                    </TemplateColumn>
+                </QuickGrid>
+            </div>
         </div>
 
         <div class="card-footer text-end">
             <strong>Conteo: </strong>@Lista.Count()
-            <strong>Total: </strong>@CostoTotal().ToString("N2")
+            <strong>Total: </strong>$ @CostoTotal().ToString("N2")
         </div>
     </div>
 </div>
