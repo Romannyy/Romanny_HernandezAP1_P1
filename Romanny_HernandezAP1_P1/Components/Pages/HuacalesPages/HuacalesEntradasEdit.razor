@@ -37,11 +37,15 @@
                         <InputText class="form-control" @bind-Value="entrada.NombreCliente"></InputText>
                         <ValidationMessage For="@(() => (entrada.NombreCliente))"></ValidationMessage>
                     </div>
-
                     <div class="mb-3">
-                        <strong>Costo</strong>
-                        <InputNumber class="form-control" @bind-Value="entrada.Costo"></InputNumber>
-                        <ValidationMessage For="@(() => (entrada.Costo))"></ValidationMessage>
+                        <strong>Precio</strong>
+                        <InputNumber class="form-control" @bind-Value="entrada.Precio"></InputNumber>
+                        <ValidationMessage For="@(() => (entrada.Precio))"></ValidationMessage>
+                    </div>
+                    <div class="mb-3">
+                        <strong>Cantidad</strong>
+                        <InputNumber class="form-control" @bind-Value="entrada.Cantidad"></InputNumber>
+                        <ValidationMessage For="@(() => (entrada.Cantidad))"></ValidationMessage>
                     </div>
 
                     @if (!string.IsNullOrEmpty(Mensaje))
