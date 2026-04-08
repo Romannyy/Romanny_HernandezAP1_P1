@@ -7,23 +7,13 @@ namespace Romanny_HernandezAP1_P1.Services;
 
 public class EntradasHuacalesService(IDbContextFactory<Contexto> DbFactory)
 {
-    // MÉTODO INSERTAR
-     
     private async Task<bool> Insertar(EntradasHuacales entrada)
     {
-       await using var contexto = await DbFactory.CreateDbContextAsync();
+        await using var contexto = await DbFactory.CreateDbContextAsync();
         contexto.EntradasHuacales.Add(entrada);
         return await contexto.SaveChangesAsync() > 0;
     }
 
-    // MÉTODO EXISTE POR ID
-    private async Task<bool> Existe(int idEntrada)
-    {
-        await using var contexto = await DbFactory.CreateDbContextAsync();
-        return await contexto.EntradasHuacales.AnyAsync(a => (a.IdEntrada == idEntrada));
-    }
-
-    // MÉTODO MODIFICAR
     private async Task<bool> Modificar(EntradasHuacales entrada)
     {
         await using var contexto = await DbFactory.CreateDbContextAsync();
@@ -31,49 +21,53 @@ public class EntradasHuacalesService(IDbContextFactory<Contexto> DbFactory)
         return await contexto.SaveChangesAsync() > 0;
     }
 
-    // MÉTODO EXISTE POR NOMBRE
+    private async Task<bool> Existe(int idEntrada)
+    {
+        await using var contexto = await DbFactory.CreateDbContextAsync();
+        return await contexto.EntradasHuacales.AnyAsync(a => a.IdEntrada == idEntrada);
+    }
+
     private async Task<bool> ExisteNombre(string nombreCliente, int idEntrada)
     {
         await using var contexto = await DbFactory.CreateDbContextAsync();
-        return await contexto.EntradasHuacales.AnyAsync(a => (a.NombreCliente == nombreCliente && a.IdEntrada != idEntrada));
+        return await contexto.EntradasHuacales.AnyAsync(a => a.NombreCliente == nombreCliente && a.IdEntrada != idEntrada);
     }
 
-    // MÉTODO BUSCAR
     public async Task<EntradasHuacales?> Buscar(int idEntrada)
     {
         await using var contexto = await DbFactory.CreateDbContextAsync();
-        return await contexto.EntradasHuacales.AsNoTracking().FirstOrDefaultAsync(a => (a.IdEntrada == idEntrada));
+        return await contexto.EntradasHuacales
+            .Include(e => e.Detalle)
+            .AsNoTracking()
+            .FirstOrDefaultAsync(a => a.IdEntrada == idEntrada);
     }
 
-    // MÉTODO ELIMINAR
     public async Task<bool> Eliminar(int idEntrada)
     {
         await using var contexto = await DbFactory.CreateDbContextAsync();
-        return await contexto.EntradasHuacales.Where(a => (a.IdEntrada == idEntrada)).ExecuteDeleteAsync() > 0;
-
+        return await contexto.EntradasHuacales
+            .Where(a => a.IdEntrada == idEntrada)
+            .ExecuteDeleteAsync() > 0;
     }
 
-    // MÉTODO GUARDAR
     public async Task<bool> Guardar(EntradasHuacales entrada)
     {
         if (await ExisteNombre(entrada.NombreCliente, entrada.IdEntrada))
-            throw new Exception("No puedes almacenar dos entradas con el mismo nombre.");
+            throw new Exception("No puedes guardar dos clientes con el mismo nombre.");
 
-        if (await Existe(entrada.IdEntrada))
-            return await Modificar(entrada);
-        else
+        if (!await Existe(entrada.IdEntrada))
             return await Insertar(entrada);
+
+        return await Modificar(entrada);
     }
 
-    // MÉTEODO LISTAR
     public async Task<List<EntradasHuacales>> Listar(Expression<Func<EntradasHuacales, bool>> criterio)
     {
         await using var contexto = await DbFactory.CreateDbContextAsync();
         return await contexto.EntradasHuacales
+            .Include(e => e.Detalle)
             .Where(criterio)
             .AsNoTracking()
             .ToListAsync();
     }
-
-
 }
